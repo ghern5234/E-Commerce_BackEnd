@@ -3,26 +3,80 @@ const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
 
-router.get('/', (req, res) => {
-  // find all categories
-  // be sure to include its associated Products
+// Find all categories
+// Be sure to include its associated Products
+router.get('/', async (req, res) => {
+  try {
+    const allCategories = await Category.findAll({
+      include: [{model: Product }]
+    });
+    res.status(200).json(allCategories);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
-router.get('/:id', (req, res) => {
-  // find one category by its `id` value
-  // be sure to include its associated Products
+// Find one category by its `id` value
+// Be sure to include its associated Products
+router.get('/:id', async (req, res) => {
+  try {
+    const categoryId = await Category.findByPk(req.params.id, {
+      include: [{model: Product }]
+    });
+
+    if (!categoryId) {
+      res.status(404).json({ message: 'No category found with that id!' });
+      return;
+    }
+    res.status(200).json(allCategories);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
-router.post('/', (req, res) => {
-  // create a new category
+// Create a new category
+router.post('/', async (req, res) => {
+  try {
+    const categoryId = await Category.create(req.body);
+    res.status(200).json(categoryId)
+  } catch {
+    res.status(400).json(err);
+  }
+
 });
 
-router.put('/:id', (req, res) => {
-  // update a category by its `id` value
+//???//
+// Update a category by its `id` value
+router.put('/:id', async (req, res) => {
+  try {
+    const categoryId = await Category.update(req.body, {
+       where: {
+        id: req.params.id
+       }
+    });
+    res.status(200).json(categoryId);
+
+  } catch {
+    res.status(400).json(err);
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  // delete a category by its `id` value
+// Delete a category by its `id` value
+router.delete('/:id', async (req, res) => {
+  try {
+    const categoryToDelete = await Category.destroy ({
+      where: {
+        id: req.params.id,
+      },
+    })
+    if(!categoryToDelete) {
+      res.status(404).json({ message: 'No category found with that id.'});
+      return;
+    }
+
+  } catch (err) {
+     res.status(500).json(err);
+  }
 });
 
 module.exports = router;
