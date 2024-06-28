@@ -1,3 +1,5 @@
+// This is an associative table to bridge and manage mange to many relationships between the two tables
+
 const { Model, DataTypes } = require('sequelize');
 
 const sequelize = require('../config/connection');
